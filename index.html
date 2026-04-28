@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mayur Nobles Academy — Senior Secondary School, Barmer</title>
+  <meta name="description" content="Mayur Nobles Academy — A CBSE Senior Secondary School in Barmer, Rajasthan. Nurturing students with quality education, values, and discipline since 2005.">
+  <meta property="og:title" content="Mayur Nobles Academy — CBSE School, Barmer">
+  <meta property="og:description" content="CBSE Senior Secondary School in Barmer, Rajasthan. Admissions open for Session 2025–26. Classes I to XII.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- React + Babel (CDN — no build step needed) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #060B18;
+      color: #F1F5F9;
+      overflow-x: hidden;
+    }
+    #root { min-height: 100vh; }
+    a { color: #F97316; text-decoration: none; }
+
+    /* ── Section divider fade ── */
+    .section-fade-top {
+      position: absolute; top: 0; left: 0; right: 0; height: 120px;
+      background: linear-gradient(to bottom, #060b18, transparent);
+      pointer-events: none; z-index: 2;
+    }
+    .section-fade-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+      background: linear-gradient(to top, #060B18, transparent);
+      pointer-events: none; z-index: 2;
+    }
+
+    /* ── Spotlight card styles ── */
+    .feat-spotlight {
+      --x: 0; --y: 0; --xp: 0; --yp: 0;
+      --hue: 30; --spread: 200;
+      position: relative;
+      border-radius: 20px;
+      padding: 1.5px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+      cursor: default;
+      will-change: transform;
+    }
+    .feat-spotlight:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+    .feat-spotlight::before {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background-image: radial-gradient(
+        220px 220px at calc(var(--x) * 1px) calc(var(--y) * 1px),
+        hsl(calc(var(--hue) + var(--xp, 0) * var(--spread)) 80% 65% / 0.18),
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feat-spotlight:hover::before { opacity: 1; }
+    .feat-inner {
+      border-radius: 18px;
+      padding: 26px 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.018) 100%);
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.06);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .feat-inner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      background: radial-gradient(200px 200px at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px), rgba(255,255,255,0.04), transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .feat-spotlight:hover .feat-inner::before { opacity: 1; }
+
+    /* ── Mobile menu ── */
+    .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; cursor: pointer; padding: 0 10px; }
+    .hamburger span { display: block; height: 2px; background: #CBD5E1; border-radius: 2px; transition: all 0.3s ease; transform-origin: center; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed; top: 68px; left: 0; right: 0;
+      background: rgba(8,13,26,0.97);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
+      z-index: 299;
+    }
+    .mobile-menu.open {
+      max-height: 420px;
+      padding: 12px 0 24px;
+    }
+    .mobile-menu a, .mobile-menu .mob-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 28px; color: #CBD5E1; font-size: 15px; font-weight: 500;
+      text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: color 0.2s, background 0.2s; cursor: pointer;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover, .mobile-menu .mob-link:hover { color: #F97316; background: rgba(249,115,22,0.06); }
+    .mobile-menu .mob-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+    .mobile-menu .mob-apply {
+      margin: 16px 28px 0;
+      display: block; text-align: center;
+      background: linear-gradient(135deg,#F97316,#EA580C);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 0; font-family: 'Inter',sans-serif;
+      font-weight: 600; font-size: 15px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(249,115,22,0.35);
+    }
+
+    /* ── Desktop nav hide on mobile ── */
+    /* Mobile stats bar — desktop hidden */
+    .hero-stats-bar { display: none; }
+    /* Mobile elements — desktop hidden */
+    .hero-mobile-student { display: none; }
+    .hero-mobile-blob { display: none; }
+    /* Showcase visible on desktop */
+    .hero-student-showcase { display: block; }
+
+    /* ── Tablet (769px – 1100px) ── */
+    @media (min-width: 769px) and (max-width: 1100px) {
+      .hero-grid { gap: 32px !important; }
+      .hero-cards > div { width: 175px !important; height: 238px !important; }
+    }
+
+    /* ── Mobile (≤768px) ── */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none !important; }
+      .hamburger { display: flex !important; }
+
+      /* Hero name — mobile */
+      .hero-name { font-size: 1.8rem !important; }
+
+      /* Hero: text at top, full width, left-aligned */
+      .hero-grid { display: block !important; position: static !important; }
+      .hero-left {
+        position: absolute !important;
+        top: 90px !important;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+        padding: 0 20px !important;
+      }
+      .hero-title { font-size: clamp(2.2rem, 9vw, 3rem) !important; line-height: 1.08 !important; margin-bottom: 12px !important; }
+      .hero-subtitle { font-size: clamp(1rem, 4vw, 1.3rem) !important; letter-spacing: 0.08em !important; white-space: nowrap !important; }
+      .hero-tagline { font-size: 0.85rem !important; }
+      .hero-stats { display: none !important; }
+
+      /* Hide desktop showcase on mobile */
+      .hero-student-showcase { display: none !important; }
+
+      .hero-cards { display: none !important; }
+      .section-fade-bottom { display: none !important; }
+
+      /* Blob behind student */
+      .hero-mobile-blob {
+        display: block !important;
+        position: absolute !important;
+        width: 280px;
+        height: 280px;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 100px;
+        z-index: 3;
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      /* Mobile student image */
+      .hero-mobile-student {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-end !important;
+        position: absolute !important;
+        left: 0; right: 0;
+        top: 290px;
+        bottom: 86px;
+        z-index: 4;
+        pointer-events: none;
+      }
+      .hero-mobile-student img {
+        height: 280px !important;
+        width: auto !important;
+      }
+
+      /* Mobile stats bar */
+      .hero-stats-bar {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-evenly !important;
+        position: absolute !important;
+        bottom: 0; left: 0; right: 0;
+        padding: 18px 0 22px;
+        z-index: 10;
+        border-top: 1px solid rgba(255,255,255,0.10);
+        background: rgba(6,11,24,0.5);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .hsb-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .hsb-val { font-family: 'Outfit', sans-serif; font-size: 1.7rem; font-weight: 900; line-height: 1; }
+      .hsb-lbl { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.08em; }
+      .hsb-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.12); }
+
+      .feat-grid { grid-template-columns: 1fr !important; }
+      .campus-grid { grid-template-columns: 1fr !important; }
+      .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+      .cta-strip { flex-direction: column !important; }
+    }
+    @media (max-width: 1024px) {
+      .feat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .campus-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    @keyframes streak { 0%,100%{opacity:0.15} 50%{opacity:0.4} }
+
+    /* ── Animated rotating gradient border for student cards ── */
+    @property --gradient-angle {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+    @keyframes grad-rotate {
+      to { --gradient-angle: 360deg; }
+    }
+    .card-grad-border {
+      animation: grad-rotate 4s linear infinite;
+    }
+    .card-grad-border:hover {
+      animation-duration: 1.5s;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── StudentCard Component ── -->
+<script type="text/babel">
+const STUDENT_IMAGES = {
+  1: 'assets/real-student-2.jpg',
+  2: 'assets/real-student-1.jpg',
+};
+
+const StudentCard = ({ id, glowBase, name, grade, subject, badge, score, imgPos, onExpand }) => {
+  const [hovered, setHovered] = React.useState(false);
+  const accent = glowBase < 100 ? '#F97316' : '#60A5FA';
+
+  return (
+    <div
+      onClick={onExpand}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: 200, height: 275, borderRadius: 18, overflow: 'hidden',
+        flexShrink: 0, cursor: 'pointer', position: 'relative',
+        boxShadow: hovered ? '0 20px 48px rgba(0,0,0,0.6)' : '0 6px 24px rgba(0,0,0,0.45)',
+        transform: hovered ? 'translateY(-6px)' : 'none',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        display: 'flex', flexDirection: 'column',
+      }}
+    >
+      {/* Photo */}
+      <img
+        src={STUDENT_IMAGES[id]} alt={name}
+        style={{ flex: 1, width: '100%', objectFit: 'cover', objectPosition: imgPos || 'center 10%', display: 'block', minHeight: 0 }}
+      />
+
+      {/* Accent bar */}
+      <div style={{ height: 3, background: accent, flexShrink: 0 }} />
+
+      {/* Info */}
+      <div style={{ padding: '10px 14px 12px', background: '#0D1117', flexShrink: 0 }}>
+        <div style={{ fontSize: 8, fontWeight: 700, color: accent, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>{badge}</div>
+        <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: 15, color: '#F1F5F9', lineHeight: 1.2, marginBottom: 6 }}>{name}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{grade} · {subject}</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: accent }}>{score}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+window.StudentCard = StudentCard;
+</script>
+
+<!-- ── NavBar Component ── -->
+<script type="text/babel">
+const NavBar = () => {
+  const [scrolled, setScrolled] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  React.useEffect(() => {
+    const close = (e) => { if (menuOpen && !e.target.closest('nav') && !e.target.closest('.mobile-menu')) setMenuOpen(false); };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [menuOpen]);
+
+  const navStyle = {
+    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 300,
+    padding: '0 32px', height: 68,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    background: (scrolled || menuOpen) ? 'rgba(8,13,26,0.97)' : 'transparent',
+    backdropFilter: (scrolled || menuOpen) ? 'blur(20px)' : 'none',
+    borderBottom: (scrolled || menuOpen) ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
+    transition: 'all 0.3s ease',
+  };
+
+  const links = ['About', 'Academics', 'Admissions', 'Gallery', 'Contact'];
+  const linkStyle = { color: '#CBD5E1', fontWeight: 500, fontSize: 14, textDecoration: 'none', transition: 'color 0.2s', cursor: 'pointer', padding: '4px 0' };
+  const btnStyle = {
+    background: 'linear-gradient(135deg,#F97316,#EA580C)',
+    color: '#fff', border: 'none', borderRadius: 10,
+    padding: '10px 22px', fontFamily: 'Inter,sans-serif',
+    fontWeight: 600, fontSize: 14, cursor: 'pointer',
+    boxShadow: '0 4px 16px rgba(249,115,22,0.35)',
+    transition: 'all 0.25s ease',
+  };
+
+  return (
+    <>
+      <nav style={navStyle}>
+        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <div style={{ width: 50, height: 50, borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(212,175,55,0.75)', boxShadow: '0 0 0 1px rgba(212,175,55,0.2), 0 4px 16px rgba(0,0,0,0.5)', background: '#fff', flexShrink: 0 }}>
+            <img src="new logo for mayur school 01.png" alt="Mayur Nobles Academy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+          </div>
+        </a>
+
+        {/* Desktop nav */}
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }} className="desktop-nav">
+          {links.map(l => (
+            <a key={l} href="#" style={linkStyle}
+              onMouseEnter={e => e.target.style.color='#FFFFFF'}
+              onMouseLeave={e => e.target.style.color='#CBD5E1'}
+            >{l}</a>
+          ))}
+          <button style={btnStyle}
+            onMouseEnter={e => { e.target.style.transform='translateY(-1px)'; e.target.style.boxShadow='0 8px 24px rgba(249,115,22,0.5)'; }}
+            onMouseLeave={e => { e.target.style.transform='none'; e.target.style.boxShadow='0 4px 16px rgba(249,115,22,0.35)'; }}
+          >Seek Admission</button>
+        </div>
+
+        {/* Hamburger — mobile only */}
+        <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+
+      {/* Mobile dropdown menu */}
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`}>
+        {links.map(l => (
+          <a key={l} href="#" onClick={() => setMenuOpen(false)}>
+            <span className="mob-dot"></span>
+            {l}
+          </a>
+        ))}
+        <button className="mob-apply" onClick={() => setMenuOpen(false)}>Seek Admission →</button>
+      </div>
+    </>
+  );
+};
+
+window.NavBar = NavBar;
+</script>
+
+<!-- ── HeroSection Component ── -->
+<script type="text/babel">
+const STUDENTS = [
+  { id: 1, glowBase: 30,  color: '#F97316', name: 'Priya Rathore', grade: 'Class XII', subject: 'Science', badge: '12th Board Topper · 2025', score: '96.4%', achievement: 'District Rank 1', awards: '3', imgPos: 'center 10%' },
+  { id: 2, glowBase: 210, color: '#60A5FA', name: 'Ananya Singh',  grade: 'Class X',   subject: 'CBSE',    badge: '10th Board Topper · 2025', score: '95.2%', achievement: 'School Merit',    awards: '2', imgPos: 'center 15%' },
+];
+
+const StatTile = ({ target, suffix, label, color }) => {
+  const [count, setCount] = React.useState(0);
+  const ref = React.useRef(null);
+  const rafRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        const duration = 1800;
+        let startTime = null;
+        const step = (ts) => {
+          if (!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setCount(Math.floor(eased * target));
+          if (progress < 1) rafRef.current = requestAnimationFrame(step);
+        };
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        setCount(0);
+      }
+    }, { threshold: 0.4 });
+    if (ref.current) observer.observe(ref.current);
+    return () => { observer.disconnect(); if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [target]);
+
+  return (
+    <div className="hsb-tile" ref={ref}>
+      <span className="hsb-val" style={{ color }}>{count}{suffix}</span>
+      <span className="hsb-lbl">{label}</span>
+    </div>
+  );
+};
+
+const HeroSection = () => {
+  const [expanded, setExpanded] = React.useState(null);
+
+  const expandedCard = expanded ? STUDENTS.find(s => s.id === expanded) : null;
+
+  return (
+    <section style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '120px 0 80px' }}>
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('school image of mayur nobles  enhanced.png')`, backgroundSize: 'cover', backgroundPosition: 'center 40%', filter: 'blur(2px)', transform: 'scale(1.04)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(6,11,24,0.52)' }} />
+      <div className="section-fade-bottom" />
+
+      {/* ── Desktop Student Showcase ── */}
+      <div className="hero-student-showcase" style={{ position: 'absolute', top: 80, bottom: 0, right: 0, width: '50%', zIndex: 5, pointerEvents: 'none', overflow: 'hidden' }}>
+        {/* Student image fills showcase height */}
+        <img src="STUDENT IMAGE FOR HERO SECTION 3.png" alt="Student"
+          style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', height: '100%', width: 'auto', objectFit: 'contain', zIndex: 2 }}
+        />
+        {/* Bottom fade — z-index above student */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, background: 'linear-gradient(to top,rgba(6,11,24,1) 30%,transparent)', zIndex: 4 }} />
+      </div>
+
+      <div className="hero-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', position: 'relative', zIndex: 10, width: '100%' }}>
+
+        {/* ── LEFT ── */}
+        <div className="hero-left">
+          <h1 className="hero-title" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(2rem,4vw,3.6rem)', lineHeight: 1.08, letterSpacing: '-0.02em', color: '#F1F5F9', marginBottom: 14 }}>
+            <span style={{ background: 'linear-gradient(135deg,#F97316,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Mayur</span>{' '}
+            <span style={{ color: '#F1F5F9' }}>Nobles</span>{' '}
+            <span style={{ background: 'linear-gradient(135deg,#F97316,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Academy</span>
+          </h1>
+          <p className="hero-subtitle" style={{ fontFamily: 'Outfit,sans-serif', fontSize: '1.1rem', fontWeight: 500, color: '#F1F5F9', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16 }}>
+            Senior Secondary School · Barmer
+          </p>
+          <p className="hero-tagline" style={{ fontFamily: 'Inter,sans-serif', fontSize: '1.15rem', fontWeight: 400, color: 'rgba(241,245,249,0.92)', fontStyle: 'italic', letterSpacing: '0.02em', lineHeight: 1.6 }}>
+            Knowledge · Character · Excellence
+          </p>
+        </div>
+
+        {/* ── RIGHT — mobile cards only (desktop uses absolute showcase below) ── */}
+        <div className="hero-cards" style={{ display: 'none' }}>
+          {STUDENTS.map(s => (
+            <window.StudentCard key={s.id} {...s} onExpand={() => setExpanded(s.id)} />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Mobile Blob ── */}
+      <div className="hero-mobile-blob">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+          <defs>
+            <linearGradient id="blobGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#F97316" />
+              <stop offset="100%" stopColor="#FBBF24" />
+            </linearGradient>
+          </defs>
+          <path fill="url(#blobGrad)" d="M44.7,-55.3C56.6,-46.2,63.5,-30.5,66.2,-14.1C68.9,2.3,67.4,19.4,59.6,32.6C51.8,45.8,37.7,55.1,22.2,60.3C6.7,65.5,-10.2,66.6,-25.3,61.1C-40.4,55.6,-53.7,43.5,-61.1,28.3C-68.5,13.1,-70,-5.2,-64.2,-20.6C-58.4,-36,-45.3,-48.5,-31.2,-57C-17.1,-65.5,-2,-70,12.4,-67.8C26.8,-65.6,32.8,-64.4,44.7,-55.3Z" transform="translate(100 100)" opacity="0.85"/>
+        </svg>
+      </div>
+
+      {/* ── Mobile Student Image ── */}
+      <div className="hero-mobile-student">
+        <img src="STUDENT IMAGE FOR HERO SECTION 3.png" alt="Student"
+          style={{ height: '100%', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.4))' }}
+        />
+      </div>
+
+      {/* ── Mobile Stats Bar ── */}
+      <div className="hero-stats-bar">
+        {[{ target: 2000, suffix: '+', label: 'Students', color: '#F97316' }, { target: 98, suffix: '%', label: 'Pass Ratio', color: '#22C55E' }, { target: 20, suffix: '+', label: 'Years', color: '#60A5FA' }].map((s, i, arr) => (
+          <React.Fragment key={s.label}>
+            <StatTile {...s} />
+            {i < arr.length - 1 && <div className="hsb-divider" />}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Expanded card modal */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: expanded ? 1 : 0, pointerEvents: expanded ? 'all' : 'none', transition: 'opacity 0.3s ease' }} onClick={() => setExpanded(null)}>
+        {expandedCard && (() => {
+          const accent = expandedCard.glowBase < 100 ? '#F97316' : '#60A5FA';
+          return (
+            <div style={{ background: '#0D1117', borderRadius: 20, maxWidth: 340, width: '90%', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', position: 'relative' }} onClick={e => e.stopPropagation()}>
+
+              {/* Photo banner */}
+              <div style={{ position: 'relative', height: 220 }}>
+                <img src={STUDENT_IMAGES[expandedCard.id]} alt={expandedCard.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: expandedCard.imgPos || 'center 10%', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(13,17,23,1) 0%, transparent 55%)' }} />
+                <button onClick={() => setExpanded(null)} style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.5)', border: 'none', color: '#fff', width: 32, height: 32, borderRadius: '50%', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
+                <div style={{ position: 'absolute', bottom: 14, left: 18 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{expandedCard.badge}</span>
+                  <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: 22, color: '#fff', lineHeight: 1.1, marginTop: 3 }}>{expandedCard.name}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>{expandedCard.grade} · {expandedCard.subject}</div>
+                </div>
+              </div>
+
+              {/* Accent bar */}
+              <div style={{ height: 3, background: accent }} />
+
+              {/* Stats row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'rgba(255,255,255,0.06)' }}>
+                {[['Board Score', expandedCard.score], ['Achievement', expandedCard.achievement]].map(([lbl, val]) => (
+                  <div key={lbl} style={{ padding: '18px 20px', background: '#0D1117' }}>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{lbl}</div>
+                    <div style={{ fontFamily: 'Outfit,sans-serif', fontSize: 18, fontWeight: 800, color: accent }}>{val}</div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          );
+        })()}
+      </div>
+    </section>
+  );
+};
+
+window.HeroSection = HeroSection;
+</script>
+
+<!-- ── FeatureSection Component ── -->
+<script type="text/babel">
+const ICONS = {
+  book:    `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  trophy:  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2"/><rect x="6" y="18" width="12" height="4"/></svg>`,
+  users:   `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  monitor: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  shield:  `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  compass: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+};
+
+const FEATURES = [
+  { iconKey: 'book',    title: 'CBSE Curriculum',         desc: 'Experienced and dedicated teachers who guide every student with patience, clarity, and individual attention throughout the academic year.', color: '#F97316', hue: 30  },
+  { iconKey: 'trophy',  title: 'Outstanding Results',     desc: 'Our students have consistently achieved district and state ranks in Science, Commerce, and Arts streams year after year.', color: '#FBBF24', hue: 45  },
+  { iconKey: 'users',   title: 'All-Round Growth',        desc: 'Sports, cultural events, debates, and leadership activities help every child grow beyond the classroom.', color: '#22C55E', hue: 120 },
+  { iconKey: 'monitor', title: 'Smart Classrooms',        desc: 'Well-equipped science labs, a computer lab, a digital library, and interactive smart boards for an engaging learning experience.', color: '#60A5FA', hue: 210 },
+  { iconKey: 'shield',  title: 'Safe School Campus',      desc: 'A fully CCTV-monitored, disciplined campus with trained teachers and a caring environment where every child feels secure.', color: '#A78BFA', hue: 270 },
+  { iconKey: 'compass', title: 'Career Counselling',      desc: 'Personalised guidance for JEE, NEET, CA Foundation, and government service exams — right from Class IX onwards.', color: '#F97316', hue: 30  },
+];
+
+const FeatureSection = () => {
+  const [btnHov, setBtnHov] = React.useState(false);
+
+  React.useEffect(() => {
+    const onMove = (e) => {
+      document.querySelectorAll('.feat-spotlight').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--x', (e.clientX - rect.left).toFixed(1));
+        card.style.setProperty('--y', (e.clientY - rect.top).toFixed(1));
+        card.style.setProperty('--xp', (e.clientX / window.innerWidth).toFixed(3));
+        card.style.setProperty('--yp', (e.clientY / window.innerHeight).toFixed(3));
+      });
+    };
+    window.addEventListener('pointermove', onMove);
+    return () => window.removeEventListener('pointermove', onMove);
+  }, []);
+
+  const FeatureCard = ({ iconKey, title, desc, color, hue }) => (
+    <div className="feat-spotlight" style={{ '--hue': hue }}>
+      <div className="feat-inner">
+        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${color}16`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, color: color, flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: ICONS[iconKey] }} />
+        <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 15, fontWeight: 700, color: '#E2E8F0', marginBottom: 8, lineHeight: 1.35 }}>{title}</h3>
+        <p style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.72 }}>{desc}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <section style={{ padding: '110px 48px 120px', position: 'relative', overflow: 'hidden' }}>
+      {/* Classroom with students — actual school photo */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('assets/bg-features.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center 30%', filter: 'brightness(0.50) saturate(1.1)' }} />
+      {/* Cool indigo wash — different from hero for visual variety */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(10,14,35,0.78) 0%, rgba(12,20,50,0.55) 50%, rgba(8,12,28,0.82) 100%)' }} />
+      {/* Purple-blue glow accent */}
+      <div style={{ position: 'absolute', top: -60, right: -80, width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 65%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -80, left: -60, width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 65%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+      <div className="section-fade-top" />
+      <div className="section-fade-bottom" />
+
+      <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 9999, background: 'rgba(249,115,22,0.10)', border: '1px solid rgba(249,115,22,0.25)', color: '#F97316', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>Our Strengths</div>
+
+        <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#F1F5F9', lineHeight: 1.15, letterSpacing: '-0.025em', marginBottom: 16, maxWidth: 560 }}>
+          What makes Mayur Nobles Academy <span style={{ background: 'linear-gradient(135deg,#F97316,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>special</span>
+        </h2>
+        <p style={{ fontSize: 17, color: '#64748B', lineHeight: 1.65, maxWidth: 520, marginBottom: 64 }}>A school that treats every child with care, discipline, and respect — for over two decades in Barmer.</p>
+
+        <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          {FEATURES.map(f => <FeatureCard key={f.title} {...f} />)}
+        </div>
+
+        {/* CTA Strip */}
+        <div className="cta-strip" style={{ marginTop: 80, background: 'linear-gradient(135deg, rgba(249,115,22,0.10), rgba(249,115,22,0.05))', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 24, padding: '48px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+          <div>
+            <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 26, fontWeight: 800, color: '#F1F5F9', marginBottom: 8, lineHeight: 1.2 }}>Admissions Open for Session 2025–26</h3>
+            <p style={{ fontSize: 15, color: '#64748B' }}>Classes I to XII — CBSE. Visit school or contact us to begin the admission process.</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
+            <button
+              onMouseEnter={() => setBtnHov(true)}
+              onMouseLeave={() => setBtnHov(false)}
+              style={{ background: 'linear-gradient(135deg,#F97316,#EA580C)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 30px', fontFamily: 'Inter,sans-serif', fontWeight: 600, fontSize: 15, cursor: 'pointer', boxShadow: btnHov ? '0 12px 32px rgba(249,115,22,0.5)' : '0 6px 20px rgba(249,115,22,0.35)', transform: btnHov ? 'translateY(-2px)' : 'none', transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)' }}
+            >Enquire for Admission →</button>
+            <button style={{ background: 'transparent', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '14px 24px', fontFamily: 'Inter,sans-serif', fontWeight: 500, fontSize: 15, cursor: 'pointer' }}>School Prospectus</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+window.FeatureSection = FeatureSection;
+</script>
+
+<!-- ── Footer Component ── -->
+<script type="text/babel">
+const Footer = () => {
+  const LINKS = {
+    School:    ['About Our School', 'Our Teachers', 'Campus & Facilities', 'School Rules', 'CBSE Affiliation'],
+    Academics: ['Science Stream', 'Commerce Stream', 'Arts Stream', 'Exam Results', 'Career Counselling'],
+    Connect:   ['Admission Enquiry', 'Parent–Teacher Meeting', 'Student Attendance', 'School Calendar', 'Notices & Circulars'],
+  };
+  const badge = (txt, color) => (
+    <span key={txt} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 500, color: 'rgba(241,245,249,0.45)' }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0, display: 'inline-block' }} />
+      {txt}
+    </span>
+  );
+  const linkStyle = { display: 'block', color: '#64748B', fontSize: 13, textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s', cursor: 'pointer' };
+
+  return (
+    <footer style={{ position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '80px 48px 36px' }}>
+      {/* Library / school building image at low opacity */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1600&q=80')`, backgroundSize: 'cover', backgroundPosition: 'center 40%', filter: 'brightness(0.22) saturate(0.6) hue-rotate(200deg)' }} />
+      {/* Dark overlay */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(4,7,18,0.92) 0%, rgba(4,7,18,0.88) 100%)' }} />
+      <div className="section-fade-top" style={{ background: 'linear-gradient(to bottom, #060B18, transparent)' }} />
+      <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 56 }}>
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(212,175,55,0.75)', boxShadow: '0 0 0 1px rgba(212,175,55,0.2), 0 4px 20px rgba(0,0,0,0.5)', background: '#fff', flexShrink: 0 }}>
+                <img src="new logo for mayur school 01.png" alt="Mayur Nobles Academy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: 15, color: '#F1F5F9', lineHeight: 1.2 }}>Mayur Nobles Academy</div>
+                <div style={{ fontSize: 10, color: '#475569', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Senior Secondary · Barmer</div>
+              </div>
+            </div>
+            <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, maxWidth: 280, marginBottom: 16 }}>Nurturing good students and better human beings since 2005. Proudly serving the families of Barmer, Rajasthan.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {badge('CBSE Affiliated', '#22C55E')}
+              {badge('Est. 2005', '#F97316')}
+              {badge('Rajasthan Topper', '#FBBF24')}
+            </div>
+          </div>
+
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([col, links]) => (
+            <div key={col}>
+              <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: 14, color: '#F1F5F9', marginBottom: 16, letterSpacing: '-0.01em' }}>{col}</div>
+              {links.map(l => (
+                <a key={l} href="#" style={linkStyle}
+                  onMouseEnter={e => e.target.style.color='#F97316'}
+                  onMouseLeave={e => e.target.style.color='#64748B'}
+                >{l}</a>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ fontSize: 12, color: '#334155' }}>© 2025 Mayur Nobles Academy, Barmer, Rajasthan. All rights reserved.</div>
+          <div style={{ display: 'flex', gap: 20 }}>
+            {['School Policy', 'Admission Rules', 'RTI'].map(l => (
+              <a key={l} href="#" style={{ fontSize: 12, color: '#334155', textDecoration: 'none' }}
+                onMouseEnter={e => e.target.style.color='#F97316'}
+                onMouseLeave={e => e.target.style.color='#334155'}
+              >{l}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+window.Footer = Footer;
+</script>
+
+<!-- ── CampusSection Component ── -->
+<script type="text/babel">
+const CAMPUS_IMAGES = [
+  { url: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=85', label: 'Our Classrooms',       sub: 'Where learning comes alive every day' },
+  { url: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=85', label: 'Science Laboratory',   sub: 'Hands-on experiments for curious minds' },
+  { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=85', label: 'Convocation & Awards', sub: 'Celebrating our students\' hard work' },
+];
+
+const CampusSection = () => (
+  <section style={{ position: 'relative', overflow: 'hidden', padding: '0 0 0' }}>
+    {/* Background image — school corridor */}
+    <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('assets/bg-campus.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center 40%', filter: 'brightness(0.45) saturate(1.0)' }} />
+    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #060B18 0%, rgba(6,11,24,0.6) 40%, rgba(6,11,24,0.6) 60%, #060B18 100%)' }} />
+
+    <div style={{ position: 'relative', zIndex: 1, maxWidth: 1280, margin: '0 auto', padding: '100px 48px' }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 60 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 9999, background: 'rgba(249,115,22,0.10)', border: '1px solid rgba(249,115,22,0.25)', color: '#F97316', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 18 }}>Our Campus</div>
+        <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#F1F5F9', lineHeight: 1.15, letterSpacing: '-0.025em' }}>
+          Life at <span style={{ background: 'linear-gradient(135deg,#F97316,#FBBF24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Mayur Nobles Academy</span>
+        </h2>
+      </div>
+
+      {/* 3 image cards */}
+      <div className="campus-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+        {CAMPUS_IMAGES.map((img, i) => (
+          <div key={i} style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', height: 280, cursor: 'default', boxShadow: '0 20px 60px rgba(0,0,0,0.55)' }}
+            onMouseEnter={e => { e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow='0 32px 80px rgba(0,0,0,0.7)'; e.currentTarget.style.transition='all 0.35s cubic-bezier(0.34,1.56,0.64,1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 20px 60px rgba(0,0,0,0.55)'; }}
+          >
+            <img src={img.url} alt={img.label} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', transition: 'transform 0.5s ease' }}
+              onMouseEnter={e => e.target.style.transform='scale(1.06)'}
+              onMouseLeave={e => e.target.style.transform='scale(1)'}
+            />
+            {/* Gradient overlay on image */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(4,8,20,0.92) 0%, rgba(4,8,20,0.3) 55%, transparent 100%)' }} />
+            {/* Text */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px 22px' }}>
+              <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: 16, color: '#F1F5F9', marginBottom: 4 }}>{img.label}</div>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>{img.sub}</div>
+            </div>
+            {/* Top-left number badge */}
+            <div style={{ position: 'absolute', top: 16, left: 16, width: 32, height: 32, borderRadius: 8, background: 'rgba(249,115,22,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: 14, color: '#fff' }}>{String(i+1).padStart(2,'0')}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+window.CampusSection = CampusSection;
+</script>
+
+<!-- ── Main App ── -->
+<script type="text/babel">
+const App = () => (
+  <div>
+    <window.NavBar />
+    <window.HeroSection />
+    <window.FeatureSection />
+    <window.CampusSection />
+    <window.Footer />
+  </div>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
